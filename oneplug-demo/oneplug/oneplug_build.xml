@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="client" basedir="." default="startbuild">
+    <property name="mzheart_jar_name" value="oneplug" />
+    <property name="mzheart_jar_version" value="1.0.0" />
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="build.dir" value="${basedir}/bin/classes" />
+    <property name="lib.dir" value="${basedir}/output" />
+    <property name="jar.file" value="${mzheart_jar_name}.jar" />
+    <property name="jar_suffix" value="_${mzheart_jar_version}" />
+    <!--<property name="output_v4_file" value="${mzheart_jar_name}_v4_${jar_suffix}.jar" />-->
+    <property name="output_host_file" value="${mzheart_jar_name}${jar_suffix}.jar" />
+    <!-- folder for the 3rd party java libraries -->
+    <property name="external_libs" value="libs" />
+
+    <property environment="env" />
+    <!-- SDK -->
+    <condition property="sdk-folder" value="C:/work/androidsdk/"  else="${env.ANDROID_SDK_HOME}">
+        <not>
+            <isset property="env.ANDROID_SDK_HOME"/>
+        </not>
+    </condition>
+    <property name="sdk-platform-folder" value="${sdk-folder}/platforms/android-19" />
+    <property name="android-jar" value="${sdk-platform-folder}/android.jar" />
+    <property name="proguard-home" value="C:/work/androidsdk/tools/proguard" />
+
+    <tstamp>
+        <format locale="cn" pattern="yyyy-MM-dd" property="TODAY" />
+    </tstamp>
+
+    <path id="classpath">
+        <fileset dir="${external_libs}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <echo>clean build dir</echo>
+        <delete dir="${build.dir}" quiet="true" />
+        <delete file="${lib.dir}/${jar.file}" quiet="true" />
+        <delete dir="${lib.dir}" quiet="true" />
+    </target>
+
+    <target name="init" depends="clean">
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${lib.dir}" />
+        <mkdir dir="${external_libs}" />
+    </target>
+
+    <target name="compile" depends="init">
+        <echo>compile the source</echo>
+        <javac bootclasspath="${android-jar}" destdir="${build.dir}" encoding="UTF-8" includeantruntime="false" source="1.6"
+            srcdir="${src.dir}" target="1.6">
+            <include name="**/*.java" />
+            <classpath refid="classpath" />
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${lib.dir}/${jar.file}">
+            <fileset dir="${build.dir}"></fileset>
+        </jar>
+    </target>
+
+    <target name="obfuscate-jar" depends="jar">
+        <echo>obfuscate...</echo>
+        <move file="${lib.dir}/${jar.file}" tofile="${lib.dir}/temp.jar" />
+        <exec executable="java" failonerror="true">
+            <arg value="-jar" />
+            <arg value="${proguard-home}/lib/proguard.jar" />
+            <arg value="-injars" />
+            <arg value="${lib.dir}/temp.jar" />
+            <arg value="-outjars" />
+            <arg value="${lib.dir}/${jar.file}" />
+            <arg value="-libraryjars" />
+            <arg value="${android-jar}" />
+            <arg value="-ignorewarnings" />
+            <arg value="-printmapping ${lib.dir}/mapping.txt" />
+            <arg value="@proguard.cfg" />
+        </exec>
+        <delete file="${lib.dir}/temp.jar" quiet="true" />
+    </target>
+
+    <target name="startbuild" depends="obfuscate-jar">
+        <jar destfile="${lib.dir}/${output_host_file}">
+
+            <zipgroupfileset dir="${lib.dir}">
+                <include name="${jar.file}" />
+            </zipgroupfileset>
+
+            <manifest>
+                <attribute name="mzheart_jar_version" value="${mzheart_jar_version}" />
+                <attribute name="Release-Date" value="${TODAY}" />
+                <attribute name="Type" value="Lite" />
+            </manifest>
+        </jar>
+    </target>
+
+
+
+</project>

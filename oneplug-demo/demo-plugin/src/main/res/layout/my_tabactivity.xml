@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <LinearLayout
+        android:id="@+id/tab_one"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tab_one_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="123"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tab_tow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <TextView
+            android:id="@+id/tab_tow_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="456"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tab_three"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tab_three_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="789"/>
+    </LinearLayout>
+
+</FrameLayout>
